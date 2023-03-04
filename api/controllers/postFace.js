@@ -3,28 +3,17 @@ import { Canvas, Image } from "canvas";
 import canvas from "canvas";
 import fileUpload from "express-fileupload";
 
-import FaceModel from "../database/FaceModal/faceModal.js";
+import FaceModel from "../database/FaceModal/faceModel.js";
 
-async function uploadLabeledImages(images, label) {
+export async function uploadLabeledImages(image, label) {
     try {
   
       const descriptions = [];
       // Loop through the images
-      for (let i = 0; i < images.length; i++) {
-        const img = await canvas.loadImage(images[i]);
+        const img = await canvas.loadImage(image);
         // Read each face and save the face descriptions in the descriptions array
         const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
         descriptions.push(detections.descriptor);
-      }
-
-      console.log(descriptions)
-  
-      // Create a new face document with the given label and save it in DB
-    //   const createFace = new FaceModel({
-    //     label: label,
-    //     descriptions: descriptions,
-    //   });
-    //   await createFace.save();
 
       const createFace = await FaceModel.create({
         label: label,
@@ -39,12 +28,12 @@ async function uploadLabeledImages(images, label) {
   }
 
 
-const postFace = async (req, res) => {
-    const img = req.files.img.tempFilePath;
-    const label = req.body.label;
+export const postFace = async (req, res) => {
 
-    let result = await uploadLabeledImages([img], label);
-    
+    const { img, label } = req.body;
+
+    const result = await uploadLabeledImages(img , label);
+
     if (result){
         res.json({ message: "Face data stored successfully "});
     }else{
@@ -52,6 +41,5 @@ const postFace = async (req, res) => {
     }
 }
 
-export default postFace;
 
   

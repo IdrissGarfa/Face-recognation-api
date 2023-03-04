@@ -15,6 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import faceRoutes from "./routes/faceRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 
 faceapi.env.monkeyPatch({ Canvas, Image });
@@ -42,13 +43,8 @@ app.use(
 
   LoadModels();
   
-  // console.log(__dirname)
-
-app.get("/", (req, res) => {
-    res.send("server ok!")
-})
-
-app.use('/api/v1/face-recongation', faceRoutes);
+app.use('/api/v1/face-recognation', faceRoutes);
+// app.use('/api/v1/auth/clients', authRoutes);
 
 
 

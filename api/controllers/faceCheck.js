@@ -1,11 +1,9 @@
 import faceapi from "face-api.js";
-import { Canvas, Image } from "canvas";
 import canvas from "canvas";
-import fileUpload from "express-fileupload";
 
-import FaceModel from "../database/FaceModal/faceModal.js";
+import FaceModel from "../database/FaceModal/faceModel.js";
 
-async function getDescriptorsFromDB(image) {
+export async function getDescriptorsFromDB(image) {
     // Get all the face data from mongodb and loop through each of them to read the data
     let faces = await FaceModel.find();
     for (let i = 0; i < faces.length; i++) {
@@ -14,7 +12,10 @@ async function getDescriptorsFromDB(image) {
         faces[i].descriptions[j] = new Float32Array(Object.values(faces[i].descriptions[j]));
       }
       // Turn the DB face docs to
-      faces[i] = new faceapi.LabeledFaceDescriptors(faces[i].label, faces[i].descriptions);
+      faces[i] = new faceapi.LabeledFaceDescriptors(
+        faces[i].label,
+        faces[i].descriptions
+        );
     }
   
     // Load face matcher to find the matching face
@@ -35,12 +36,11 @@ async function getDescriptorsFromDB(image) {
   }
 
  
-const faceCheck = async (req, res) => {
-    const img = req.files.img.tempFilePath;
+export const faceCheck = async (req, res) => {
+    const { img } = req.body;
     let result = await getDescriptorsFromDB(img);
     res.json({ result });
 }
 
-export default faceCheck;
 
   
